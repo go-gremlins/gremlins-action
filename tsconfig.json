@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "target": "es6",
+    /* Specify what module code is generated. */
+    "module": "commonjs",
+    /* Redirect output structure to the directory. */
+    "outDir": "./lib",
+    /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "rootDir": "./src",
+    /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
+    "esModuleInterop": true,
+    /* Ensure that casing is correct in imports. */
+    "forceConsistentCasingInFileNames": true,
+    /* Enable all strict type-checking options. */
+    "strict": true,
+    /* Skip type checking all .d.ts files. */
+    "skipLibCheck": true,
+    /* Raise error on expressions and declarations with an implied 'any' type. */
+    "noImplicitAny": true
+  },
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts"
+  ]
+}

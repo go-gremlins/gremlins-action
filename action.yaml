@@ -1,0 +1,14 @@
+name: 'Run gremlins unleash'
+description: 'Official GitHub Action for Gremlins'
+author: 'gremlins'
+inputs:
+  version: # change this
+    required: false
+    description: 'The version of Gremlins to use'
+    default: 'latest'
+  flags:
+    required: false
+    description: 'The flags to pass to the unleash command'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'

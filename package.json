@@ -1,0 +1,46 @@
+{
+  "name": "gremlins-action",
+  "version": "1.0.0",
+  "description": "The official GitHub Action for Gremlins",
+  "main": "lib/main.js",
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write '**/*.ts'",
+    "format-check": "prettier --check '**/*.ts'",
+    "lint": "eslint src/**/*.ts",
+    "package": "ncc build --source-map --license licenses.txt",
+    "test": "jest",
+    "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/go-gremlins/gremlins-action.git"
+  },
+  "author": "Davide Petilli",
+  "license": "Apache-2.0",
+  "keywords": [
+    "actions",
+    "node",
+    "setup"
+  ],
+  "bugs": {
+    "url": "https://github.com/go-gremlins/gremlins-action/issues"
+  },
+  "homepage": "https://github.com/go-gremlins/gremlins-action#readme",
+  "devDependencies": {
+    "@types/jest": "^28.1.7",
+    "@typescript-eslint/eslint-plugin": "^5.33.1",
+    "@typescript-eslint/parser": "^5.33.1",
+    "@vercel/ncc": "^0.34.0",
+    "eslint": "^8.22.0",
+    "eslint-plugin-github": "^4.3.7",
+    "eslint-plugin-jest": "^26.8.3",
+    "jest": "^28.1.3",
+    "prettier": "^2.7.1",
+    "ts-jest": "^28.0.8",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@actions/core": "^1.9.1"
+  }
+}
