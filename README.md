@@ -1,6 +1,6 @@
 # gremlins-action
 
-The official GitHub Action for Gremlins.
+The official Version Action for Gremlins.
 
 [![codecov](https://codecov.io/gh/go-gremlins/gremlins-action/branch/main/graph/badge.svg?token=MTDsNc2Lak)](https://codecov.io/gh/go-gremlins/gremlins-action)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e95c66bb9a0fa4d3f8d3/maintainability)](https://codeclimate.com/github/go-gremlins/gremlins-action/maintainability)

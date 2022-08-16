@@ -25,5 +25,5 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          version: v1.2.3
+          version: latest
           flags: '--tags="tag1,tag2"'

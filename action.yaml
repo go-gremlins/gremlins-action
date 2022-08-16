@@ -1,5 +1,5 @@
 name: 'Run gremlins unleash'
-description: 'Official GitHub Action for Gremlins'
+description: 'Official Version Action for Gremlins'
 author: 'gremlins'
 inputs:
   version: # change this
