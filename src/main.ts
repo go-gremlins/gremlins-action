@@ -15,6 +15,8 @@
  */
 import * as core from '@actions/core'
 
+import { Artifact } from './artifact'
+import { Env } from './env'
 import { Version } from './version'
 
 async function run(): Promise<void> {
@@ -24,8 +26,9 @@ async function run(): Promise<void> {
     core.debug(`Received version ${version}.`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
     core.debug(`Received flags ${flags}.`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
 
-    const release = await new Version(version).get()
-    core.info(`Found release: ${release}`)
+    const artifact = new Artifact(new Version(version), new Env())
+    const path = await artifact.getPath()
+    core.debug(`Downloaded ${path}`)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

@@ -13,6 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+import * as core from '@actions/core'
 import * as httpm from '@actions/http-client'
 import * as semver from 'semver'
 
@@ -38,6 +39,7 @@ export class Version {
       this.httpClient = client
     }
     this.version = this.getRelease(wantVer)
+    core.info(`Found release: ${this.version}`)
   }
 
   // Returns the found version in the format 'vX.Y.Z'.
