@@ -12,7 +12,6 @@ inputs:
   workdir:
     required: false
     description: 'The working directory where Gremlins will find the Go module'
-    default: '.'
 runs:
   using: 'node16'
   main: 'dist/index.js'

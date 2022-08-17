@@ -14,6 +14,7 @@
  *    limitations under the License.
  */
 import * as httpm from '@actions/http-client'
+import { TypedResponse } from '@actions/http-client/lib/interfaces'
 import { describe } from '@jest/globals'
 import { anyString, instance, mock, reset, when } from 'ts-mockito'
 
@@ -29,14 +30,18 @@ describe('version', () => {
     reset(httpClientMock)
   })
 
-  it('returns latest release', async () => {
-    const mockedResponse = {
-      statusCode: 200,
-      result: FULL_RELEASE_RESPONSE,
+  function response(status: number, result: Object): TypedResponse<any> {
+    return {
+      statusCode: status,
+      result: result,
       headers: {
         'content-type': 'application/json',
       },
     }
+  }
+
+  it('returns latest release', async () => {
+    const mockedResponse = response(200, FULL_RELEASE_RESPONSE)
     when(
       httpClientMock.getJson(
         'https://api.github.com/repos/go-gremlins/gremlins/releases'
@@ -51,13 +56,7 @@ describe('version', () => {
   })
 
   it('returns specific release', async () => {
-    const mockedResponse = {
-      statusCode: 200,
-      result: SINGLE_RELEASE_RESPONSE,
-      headers: {
-        'content-type': 'application/json',
-      },
-    }
+    const mockedResponse = response(200, SINGLE_RELEASE_RESPONSE)
     when(
       httpClientMock.getJson(
         'https://api.github.com/repos/go-gremlins/gremlins/releases/tags/v2.3.4'
@@ -72,13 +71,7 @@ describe('version', () => {
   })
 
   it('returns max satisfying release, when range is specified', async () => {
-    const mockedResponse = {
-      statusCode: 200,
-      result: FULL_RELEASE_RESPONSE,
-      headers: {
-        'content-type': 'application/json',
-      },
-    }
+    const mockedResponse = response(200, FULL_RELEASE_RESPONSE)
     when(
       httpClientMock.getJson(
         'https://api.github.com/repos/go-gremlins/gremlins/releases'
@@ -93,13 +86,7 @@ describe('version', () => {
   })
 
   it('returns the raw release', async () => {
-    const mockedResponse = {
-      statusCode: 200,
-      result: SINGLE_RELEASE_RESPONSE,
-      headers: {
-        'content-type': 'application/json',
-      },
-    }
+    const mockedResponse = response(200, SINGLE_RELEASE_RESPONSE)
     when(
       httpClientMock.getJson(
         'https://api.github.com/repos/go-gremlins/gremlins/releases/tags/v2.3.4'
@@ -114,13 +101,7 @@ describe('version', () => {
   })
 
   it('throws when range cannot be satisfied', async () => {
-    const mockedResponse = {
-      statusCode: 200,
-      result: FULL_RELEASE_RESPONSE,
-      headers: {
-        'content-type': 'application/json',
-      },
-    }
+    const mockedResponse = response(200, FULL_RELEASE_RESPONSE)
     when(
       httpClientMock.getJson(
         'https://api.github.com/repos/go-gremlins/gremlins/releases'
@@ -133,13 +114,7 @@ describe('version', () => {
   })
 
   it('throws when latest cannot be matched', async () => {
-    const mockedResponse = {
-      statusCode: 200,
-      result: [{ tag_name: 'not valid' }],
-      headers: {
-        'content-type': 'application/json',
-      },
-    }
+    const mockedResponse = response(200, [{ tag_name: 'not valid' }])
     when(
       httpClientMock.getJson(
         'https://api.github.com/repos/go-gremlins/gremlins/releases'
@@ -152,13 +127,7 @@ describe('version', () => {
   })
 
   it('throws when specific release is not found', async () => {
-    const mockedResponse = {
-      statusCode: 404,
-      result: [],
-      headers: {
-        'content-type': 'application/json',
-      },
-    }
+    const mockedResponse = response(404, [])
     when(httpClientMock.getJson(anyString())).thenResolve(mockedResponse)
 
     const version = new Version('v1.2.3', instance(httpClientMock))
@@ -167,13 +136,7 @@ describe('version', () => {
   })
 
   it('throws when specific release is not found', async () => {
-    const mockedResponse = {
-      statusCode: 404,
-      result: [],
-      headers: {
-        'content-type': 'application/json',
-      },
-    }
+    const mockedResponse = response(404, [])
     when(httpClientMock.getJson(anyString())).thenResolve(mockedResponse)
 
     const version = new Version('v1.2.3', instance(httpClientMock))
@@ -182,13 +145,7 @@ describe('version', () => {
   })
 
   it('throws when there are no releases (NOT FOUND)', async () => {
-    const mockedResponse = {
-      statusCode: 404,
-      result: [],
-      headers: {
-        'content-type': 'application/json',
-      },
-    }
+    const mockedResponse = response(404, [])
     when(httpClientMock.getJson(anyString())).thenResolve(mockedResponse)
 
     const version = new Version('latest', instance(httpClientMock))
@@ -197,13 +154,7 @@ describe('version', () => {
   })
 
   it('throws when there are no releases (empty list)', async () => {
-    const mockedResponse = {
-      statusCode: 200,
-      result: [],
-      headers: {
-        'content-type': 'application/json',
-      },
-    }
+    const mockedResponse = response(200, [])
     when(httpClientMock.getJson(anyString())).thenResolve(mockedResponse)
 
     const version = new Version('latest', instance(httpClientMock))

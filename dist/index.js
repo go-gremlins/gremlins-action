@@ -77,20 +77,22 @@ class Artifact {
             const release = yield this.version.getRaw();
             const platform = this.context.platform();
             const arch = this.context.arch();
-            const filename = `gremlins_${release}_${platform}_${arch}.tar.gz`;
-            const url = `${DOWNLOAD_URL}/v${release}/${filename}`;
+            const url = this.generateUrl(release, arch, platform);
             const cached = (0, tool_cache_1.find)(TOOL_NAME, release, arch);
             if (cached && cached !== '') {
                 core.addPath(cached);
-                core.info(`Using cached tool: ${TOOL_NAME}, ${release}, ${arch}`);
-                return path.join(cached, platform === 'windows' ? `${TOOL_NAME}.exe` : TOOL_NAME);
+                return path.join(cached, this.getToolName(platform));
             }
             const gremlinsExtractedFolder = yield this.extractToFolder(url);
             const cachedPath = yield (0, tool_cache_1.cacheDir)(gremlinsExtractedFolder, TOOL_NAME, release, arch);
-            const exePath = path.join(cachedPath, platform === 'windows' ? `${TOOL_NAME}.exe` : TOOL_NAME);
+            const exePath = path.join(cachedPath, this.getToolName(platform));
             core.addPath(cachedPath);
             return exePath;
         });
+    }
+    generateUrl(release, arch, platform) {
+        const filename = `gremlins_${release}_${platform}_${arch}.tar.gz`;
+        return `${DOWNLOAD_URL}/v${release}/${filename}`;
     }
     extractToFolder(url) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -101,6 +103,9 @@ class Artifact {
             core.debug(`Extracted to ${gremlinsExtractedFolder}`);
             return gremlinsExtractedFolder;
         });
+    }
+    getToolName(platform) {
+        return platform === 'windows' ? `${TOOL_NAME}.exe` : TOOL_NAME;
     }
 }
 exports.Artifact = Artifact;
@@ -270,18 +275,17 @@ class Gremlins {
         return __awaiter(this, void 0, void 0, function* () {
             const bin = yield this.artifact.getExePath();
             const inputs = this.ctx.getInputs();
-            const execOptions = { cwd: '.' };
+            const execOptions = {};
             const args = ['unleash'];
-            if (inputs != null && inputs.args && inputs.args !== '') {
-                const a = inputs.args.split(' ');
-                let i;
-                for (i = 0; i < a.length; i++) {
-                    args.push(a[i]);
+            if ((inputs === null || inputs === void 0 ? void 0 : inputs.args) && (inputs === null || inputs === void 0 ? void 0 : inputs.args) !== '') {
+                const split = inputs === null || inputs === void 0 ? void 0 : inputs.args.split(' ');
+                for (const arg of split) {
+                    args.push(arg);
                 }
             }
-            if (inputs != null && inputs.workdir && inputs.workdir !== '.') {
-                core.info(`Using ${inputs.workdir} as working directory`);
-                execOptions.cwd = inputs.workdir;
+            if ((inputs === null || inputs === void 0 ? void 0 : inputs.workdir) && (inputs === null || inputs === void 0 ? void 0 : inputs.workdir) !== '.') {
+                core.info(`Using ${inputs === null || inputs === void 0 ? void 0 : inputs.workdir} as working directory`);
+                execOptions.cwd = inputs === null || inputs === void 0 ? void 0 : inputs.workdir;
             }
             return yield (0, exec_1.exec)(bin, args, execOptions);
         });

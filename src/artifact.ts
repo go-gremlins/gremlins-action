@@ -38,37 +38,30 @@ export class Artifact {
     const release = await this.version.getRaw()
     const platform = this.context.platform()
     const arch = this.context.arch()
-    const filename = `gremlins_${release}_${platform}_${arch}.tar.gz`
-    const url = `${DOWNLOAD_URL}/v${release}/${filename}`
-
+    const url = this.generateUrl(release, arch, platform)
     const cached = find(TOOL_NAME, release, arch)
     if (cached && cached !== '') {
       core.addPath(cached)
-      core.info(`Using cached tool: ${TOOL_NAME}, ${release}, ${arch}`)
 
-      return path.join(
-        cached,
-        platform === 'windows' ? `${TOOL_NAME}.exe` : TOOL_NAME
-      )
+      return path.join(cached, this.getToolName(platform))
     }
-
     const gremlinsExtractedFolder = await this.extractToFolder(url)
-
     const cachedPath = await cacheDir(
       gremlinsExtractedFolder,
       TOOL_NAME,
       release,
       arch
     )
-
-    const exePath = path.join(
-      cachedPath,
-      platform === 'windows' ? `${TOOL_NAME}.exe` : TOOL_NAME
-    )
-
+    const exePath = path.join(cachedPath, this.getToolName(platform))
     core.addPath(cachedPath)
 
     return exePath
+  }
+
+  private generateUrl(release: string, arch: string, platform: string): string {
+    const filename = `gremlins_${release}_${platform}_${arch}.tar.gz`
+
+    return `${DOWNLOAD_URL}/v${release}/${filename}`
   }
 
   private async extractToFolder(url: string): Promise<string> {
@@ -79,5 +72,9 @@ export class Artifact {
     core.debug(`Extracted to ${gremlinsExtractedFolder}`)
 
     return gremlinsExtractedFolder
+  }
+
+  private getToolName(platform: string): string {
+    return platform === 'windows' ? `${TOOL_NAME}.exe` : TOOL_NAME
   }
 }

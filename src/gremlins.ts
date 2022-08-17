@@ -26,18 +26,18 @@ export class Gremlins {
     const bin = await this.artifact.getExePath()
     const inputs = this.ctx.getInputs()
 
-    const execOptions: ExecOptions = { cwd: '.' }
+    const execOptions: ExecOptions = {}
     const args: string[] = ['unleash']
-    if (inputs != null && inputs.args && inputs.args !== '') {
-      const a = inputs.args.split(' ')
-      let i: number
-      for (i = 0; i < a.length; i++) {
-        args.push(a[i])
+
+    if (inputs?.args && inputs?.args !== '') {
+      const split = inputs?.args.split(' ')
+      for (const arg of split) {
+        args.push(arg)
       }
     }
-    if (inputs != null && inputs.workdir && inputs.workdir !== '.') {
-      core.info(`Using ${inputs.workdir} as working directory`)
-      execOptions.cwd = inputs.workdir
+    if (inputs?.workdir && inputs?.workdir !== '.') {
+      core.info(`Using ${inputs?.workdir} as working directory`)
+      execOptions.cwd = inputs?.workdir
     }
 
     return await exec(bin, args, execOptions)
