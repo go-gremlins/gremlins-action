@@ -13,21 +13,17 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-import * as core from '@actions/core'
 
-import { Artifact } from './artifact'
-import { Context } from './context'
-import { Gremlins } from './gremlins'
+package test
 
-async function run(): Promise<void> {
-  try {
-    const context = new Context()
-    const artifact = new Artifact(context)
-    const gremlins = new Gremlins(context, artifact)
-    await gremlins.run()
-  } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
-  }
+func main() {
+
 }
 
-run()
+func aFuncToTest(a, b int) int {
+	if a > b {
+		return a
+	}
+
+	return b
+}

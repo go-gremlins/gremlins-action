@@ -6,9 +6,12 @@ inputs:
     required: false
     description: 'The version of Gremlins to use'
     default: 'latest'
-  flags:
+  args:
     required: false
-    description: 'The flags to pass to the unleash command'
+    description: 'The args to pass to the unleash command'
+  workdir:
+    required: false
+    description: 'The working directory where Gremlins will find the Go module'
 runs:
   using: 'node16'
   main: 'dist/index.js'

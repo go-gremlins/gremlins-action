@@ -17,19 +17,27 @@ import * as core from '@actions/core'
 import { cacheDir, downloadTool, extractTar, find } from '@actions/tool-cache'
 import * as path from 'path'
 
-import { Env } from './env'
+import { Context } from './context'
 import { Version } from './version'
 
 const TOOL_NAME = 'gremlins'
 const DOWNLOAD_URL = 'https://github.com/go-gremlins/gremlins/releases/download'
 
 export class Artifact {
-  constructor(private version: Version, private env: Env) {}
+  private version: Version
 
-  async getPath(): Promise<string> {
+  constructor(private context: Context, private v?: Version) {
+    if (!v) {
+      this.version = new Version(context.getInputs().version)
+    } else {
+      this.version = v
+    }
+  }
+
+  async getExePath(): Promise<string> {
     const release = await this.version.getRaw()
-    const platform = this.env.platform()
-    const arch = this.env.arch()
+    const platform = this.context.platform()
+    const arch = this.context.arch()
     const filename = `gremlins_${release}_${platform}_${arch}.tar.gz`
     const url = `${DOWNLOAD_URL}/v${release}/${filename}`
 
@@ -40,16 +48,11 @@ export class Artifact {
 
       return path.join(
         cached,
-        platform === 'windows' ? TOOL_NAME + '.exe' : TOOL_NAME
+        platform === 'windows' ? `${TOOL_NAME}.exe` : TOOL_NAME
       )
     }
 
-    core.info(`Downloading ${url}`)
-    const gremlinsPath = await downloadTool(url)
-
-    core.info('Extracting Gremlins')
-    const gremlinsExtractedFolder = await extractTar(gremlinsPath)
-    core.debug(`Extracted to ${gremlinsExtractedFolder}`)
+    const gremlinsExtractedFolder = await this.extractToFolder(url)
 
     const cachedPath = await cacheDir(
       gremlinsExtractedFolder,
@@ -60,11 +63,21 @@ export class Artifact {
 
     const exePath = path.join(
       cachedPath,
-      platform === 'windows' ? 'gremlins.exe' : TOOL_NAME
+      platform === 'windows' ? `${TOOL_NAME}.exe` : TOOL_NAME
     )
 
     core.addPath(cachedPath)
 
     return exePath
+  }
+
+  private async extractToFolder(url: string): Promise<string> {
+    core.info(`Downloading ${url}`)
+    const gremlinsPath = await downloadTool(url)
+    core.info('Extracting Gremlins')
+    const gremlinsExtractedFolder = await extractTar(gremlinsPath)
+    core.debug(`Extracted to ${gremlinsExtractedFolder}`)
+
+    return gremlinsExtractedFolder
   }
 }

@@ -20,7 +20,7 @@ import * as path from 'path'
 import { instance, mock, reset, when } from 'ts-mockito'
 
 import { Artifact } from '../src/artifact'
-import { Env } from '../src/env'
+import { Context } from '../src/context'
 import { Version } from '../src/version'
 
 jest.mock('@actions/tool-cache')
@@ -36,7 +36,7 @@ const WANT_CACHED_PATH = 'cached'
 
 describe('artifact', () => {
   const versionMock = mock(Version)
-  const envMock = mock(Env)
+  const context = mock(Context)
   const mockDownTool = downloadTool as jest.MockedFunction<typeof downloadTool>
   const mockExtractTar = extractTar as jest.MockedFunction<typeof extractTar>
   const mockCacheDir = cacheDir as jest.MockedFunction<typeof cacheDir>
@@ -45,7 +45,7 @@ describe('artifact', () => {
 
   beforeEach(() => {
     when(versionMock.getRaw()).thenResolve(WANT_VERSION)
-    when(envMock.arch()).thenReturn(WANT_ARCH)
+    when(context.arch()).thenReturn(WANT_ARCH)
     mockDownTool.mockResolvedValue(WANT_ARCHIVE_PATH)
     mockCacheDir.mockResolvedValue(WANT_CACHED_PATH)
     mockFind.mockReturnValue('')
@@ -54,19 +54,19 @@ describe('artifact', () => {
 
   afterEach(() => {
     reset(versionMock)
-    reset(envMock)
+    reset(context)
   })
 
   it('downloads and caches the correct linux artifact', async () => {
-    when(envMock.platform()).thenReturn('linux')
+    when(context.platform()).thenReturn('linux')
 
-    const art = new Artifact(instance(versionMock), instance(envMock))
+    const art = new Artifact(instance(context), instance(versionMock))
 
     const wantFilename = `gremlins_${WANT_VERSION}_linux_${WANT_ARCH}.tar.gz`
     const wantUrl = `${WANT_ARTIFACT_BASE_URL}/${wantFilename}`
     const wantExePath = path.join(WANT_CACHED_PATH, WANT_TOOL_NAME)
 
-    expect(await art.getPath()).toEqual(wantExePath)
+    expect(await art.getExePath()).toEqual(wantExePath)
     expect(mockDownTool).toHaveBeenCalledTimes(1)
     expect(mockDownTool).toHaveBeenCalledWith(wantUrl)
     expect(mockExtractTar).toHaveBeenCalledTimes(1)
@@ -82,15 +82,15 @@ describe('artifact', () => {
   })
 
   it('downloads and caches the correct windows artifact', async () => {
-    when(envMock.platform()).thenReturn('windows')
+    when(context.platform()).thenReturn('windows')
 
-    const art = new Artifact(instance(versionMock), instance(envMock))
+    const art = new Artifact(instance(context), instance(versionMock))
 
     const wantFilename = `gremlins_${WANT_VERSION}_windows_${WANT_ARCH}.tar.gz`
     const wantUrl = `${WANT_ARTIFACT_BASE_URL}/${wantFilename}`
     const wantExePath = path.join(WANT_CACHED_PATH, WANT_TOOL_NAME + '.exe')
 
-    expect(await art.getPath()).toEqual(wantExePath)
+    expect(await art.getExePath()).toEqual(wantExePath)
     expect(mockDownTool).toHaveBeenCalledTimes(1)
     expect(mockDownTool).toHaveBeenCalledWith(wantUrl)
     expect(mockExtractTar).toHaveBeenCalledTimes(1)
@@ -106,14 +106,14 @@ describe('artifact', () => {
   })
 
   it('returns cached if windows artifact is cached', async () => {
-    when(envMock.platform()).thenReturn('windows')
+    when(context.platform()).thenReturn('windows')
     mockFind.mockReturnValue(WANT_CACHED_PATH)
 
-    const art = new Artifact(instance(versionMock), instance(envMock))
+    const art = new Artifact(instance(context), instance(versionMock))
 
     const wantExePath = path.join(WANT_CACHED_PATH, WANT_TOOL_NAME + '.exe')
 
-    expect(await art.getPath()).toEqual(wantExePath)
+    expect(await art.getExePath()).toEqual(wantExePath)
     expect(mockDownTool).toHaveBeenCalledTimes(0)
     expect(mockExtractTar).toHaveBeenCalledTimes(0)
     expect(mockCacheDir).toHaveBeenCalledTimes(0)
@@ -121,14 +121,14 @@ describe('artifact', () => {
   })
 
   it('returns cached if linux artifact is cached', async () => {
-    when(envMock.platform()).thenReturn('linux')
+    when(context.platform()).thenReturn('linux')
     mockFind.mockReturnValue(WANT_CACHED_PATH)
 
-    const art = new Artifact(instance(versionMock), instance(envMock))
+    const art = new Artifact(instance(context), instance(versionMock))
 
     const wantExePath = path.join(WANT_CACHED_PATH, WANT_TOOL_NAME)
 
-    expect(await art.getPath()).toEqual(wantExePath)
+    expect(await art.getExePath()).toEqual(wantExePath)
     expect(mockDownTool).toHaveBeenCalledTimes(0)
     expect(mockExtractTar).toHaveBeenCalledTimes(0)
     expect(mockCacheDir).toHaveBeenCalledTimes(0)

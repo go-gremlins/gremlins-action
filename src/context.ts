@@ -13,9 +13,16 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+import * as core from '@actions/core'
 import * as os from 'os'
 
-export class Env {
+interface Inputs {
+  version: string
+  args: string | undefined
+  workdir: string | undefined
+}
+
+export class Context {
   constructor(private readonly ar?: string, private readonly pl?: string) {
     if (!this.ar) {
       this.ar = os.arch().toString()
@@ -53,5 +60,16 @@ export class Env {
     }
 
     return a
+  }
+
+  getInputs(): Inputs {
+    const version: string = core.getInput('version')
+    const args: string = core.getInput('args')
+    const workdir: string = core.getInput('workdir')
+    core.debug(`Received version ${version}.`)
+    core.debug(`Received flags ${args}.`)
+    core.debug(`Received workdir ${workdir}`)
+
+    return { version, args, workdir }
   }
 }

@@ -13,44 +13,61 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+import { getInput } from '@actions/core'
 import { describe } from '@jest/globals'
 
-import { Env } from '../src/env'
+import { Context } from '../src/context'
+
+jest.mock('@actions/core')
+
+const mockGetInput = getInput as jest.MockedFunction<typeof getInput>
 
 describe('platform', () => {
   it('returns windows if platform is win32', () => {
-    const env = new Env('', 'win32')
+    const env = new Context('', 'win32')
 
     expect(env.platform()).toEqual('windows')
   })
 
   it('returns darwin if platform is darwin', () => {
-    const env = new Env('', 'darwin')
+    const env = new Context('', 'darwin')
 
     expect(env.platform()).toEqual('darwin')
   })
 
   it('returns 386 if arch is x32', () => {
-    const env = new Env('x32', '')
+    const env = new Context('x32', '')
 
     expect(env.arch()).toEqual('386')
   })
 
   it('returns 386 if arch is ia32', () => {
-    const env = new Env('ia32', '')
+    const env = new Context('ia32', '')
 
     expect(env.arch()).toEqual('386')
   })
 
   it('returns amd64 if arch is x64', () => {
-    const env = new Env('x64', '')
+    const env = new Context('x64', '')
 
     expect(env.arch()).toEqual('amd64')
   })
 
   it('returns arm if arch is arm', () => {
-    const env = new Env('arm', '')
+    const env = new Context('arm', '')
 
     expect(env.arch()).toEqual('arm')
+  })
+
+  it('returns the correct inputs', () => {
+    mockGetInput.mockReturnValue('test')
+
+    const env = new Context()
+
+    expect(env.getInputs()).toEqual({
+      version: 'test',
+      args: 'test',
+      workdir: 'test',
+    })
   })
 })

@@ -58,34 +58,48 @@ exports.Artifact = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const tool_cache_1 = __nccwpck_require__(7784);
 const path = __importStar(__nccwpck_require__(1017));
+const version_1 = __nccwpck_require__(8217);
+const TOOL_NAME = 'gremlins';
+const DOWNLOAD_URL = 'https://github.com/go-gremlins/gremlins/releases/download';
 class Artifact {
-    constructor(version, env) {
-        this.version = version;
-        this.env = env;
+    constructor(context, v) {
+        this.context = context;
+        this.v = v;
+        if (!v) {
+            this.version = new version_1.Version(context.getInputs().version);
+        }
+        else {
+            this.version = v;
+        }
     }
-    getPath() {
+    getExePath() {
         return __awaiter(this, void 0, void 0, function* () {
             const release = yield this.version.getRaw();
-            const platform = this.env.platform();
-            const arch = this.env.arch();
+            const platform = this.context.platform();
+            const arch = this.context.arch();
             const filename = `gremlins_${release}_${platform}_${arch}.tar.gz`;
-            const url = `https://github.com/go-gremlins/gremlins/releases/download/v${release}/${filename}`;
-            const cached = (0, tool_cache_1.find)('gremlins', release, arch);
+            const url = `${DOWNLOAD_URL}/v${release}/${filename}`;
+            const cached = (0, tool_cache_1.find)(TOOL_NAME, release, arch);
             if (cached && cached !== '') {
                 core.addPath(cached);
-                return path.join(cached, platform === 'windows' ? 'gremlins.exe' : 'gremlins');
+                core.info(`Using cached tool: ${TOOL_NAME}, ${release}, ${arch}`);
+                return path.join(cached, platform === 'windows' ? `${TOOL_NAME}.exe` : TOOL_NAME);
             }
+            const gremlinsExtractedFolder = yield this.extractToFolder(url);
+            const cachedPath = yield (0, tool_cache_1.cacheDir)(gremlinsExtractedFolder, TOOL_NAME, release, arch);
+            const exePath = path.join(cachedPath, platform === 'windows' ? `${TOOL_NAME}.exe` : TOOL_NAME);
+            core.addPath(cachedPath);
+            return exePath;
+        });
+    }
+    extractToFolder(url) {
+        return __awaiter(this, void 0, void 0, function* () {
             core.info(`Downloading ${url}`);
             const gremlinsPath = yield (0, tool_cache_1.downloadTool)(url);
             core.info('Extracting Gremlins');
             const gremlinsExtractedFolder = yield (0, tool_cache_1.extractTar)(gremlinsPath);
             core.debug(`Extracted to ${gremlinsExtractedFolder}`);
-            const cachedPath = yield (0, tool_cache_1.cacheDir)(gremlinsExtractedFolder, 'gremlins', release, arch);
-            core.debug(`Cached to ${cachedPath}`);
-            const exePath = path.join(cachedPath, platform === 'windows' ? 'gremlins.exe' : 'gremlins');
-            core.debug(`Exe path is ${exePath}`);
-            core.addPath(cachedPath);
-            return exePath;
+            return gremlinsExtractedFolder;
         });
     }
 }
@@ -94,7 +108,7 @@ exports.Artifact = Artifact;
 
 /***/ }),
 
-/***/ 9763:
+/***/ 3842:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -123,7 +137,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Env = void 0;
+exports.Context = void 0;
 /*
  * Copyright 2022 The Gremlins Authors
  *
@@ -139,8 +153,9 @@ exports.Env = void 0;
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+const core = __importStar(__nccwpck_require__(2186));
 const os = __importStar(__nccwpck_require__(2037));
-class Env {
+class Context {
     constructor(ar, pl) {
         this.ar = ar;
         this.pl = pl;
@@ -175,8 +190,104 @@ class Env {
         }
         return a;
     }
+    getInputs() {
+        const version = core.getInput('version');
+        const args = core.getInput('args');
+        const workdir = core.getInput('workdir');
+        core.debug(`Received version ${version}.`);
+        core.debug(`Received flags ${args}.`);
+        core.debug(`Received workdir ${workdir}`);
+        return { version, args, workdir };
+    }
 }
-exports.Env = Env;
+exports.Context = Context;
+
+
+/***/ }),
+
+/***/ 5141:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Gremlins = void 0;
+/*
+ * Copyright 2022 The Gremlins Authors
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+const core = __importStar(__nccwpck_require__(2186));
+const exec_1 = __nccwpck_require__(1514);
+class Gremlins {
+    constructor(ctx, artifact) {
+        this.ctx = ctx;
+        this.artifact = artifact;
+    }
+    run() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const bin = yield this.artifact.getExePath();
+            const inputs = this.ctx.getInputs();
+            const execOptions = {};
+            const args = ['unleash'];
+            if (inputs != null && inputs.args && inputs.args !== '') {
+                const a = inputs.args.split(' ');
+                let i;
+                for (i = 0; i < a.length; i++) {
+                    args.push(a[i]);
+                }
+            }
+            if (inputs != null && inputs.workdir && inputs.workdir !== '.') {
+                core.info(`Using ${inputs.workdir} as working directory`);
+                execOptions.cwd = inputs.workdir;
+            }
+            return yield (0, exec_1.exec)(bin, args, execOptions);
+        });
+    }
+}
+exports.Gremlins = Gremlins;
 
 
 /***/ }),
@@ -236,18 +347,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
  */
 const core = __importStar(__nccwpck_require__(2186));
 const artifact_1 = __nccwpck_require__(7917);
-const env_1 = __nccwpck_require__(9763);
-const version_1 = __nccwpck_require__(8217);
+const context_1 = __nccwpck_require__(3842);
+const gremlins_1 = __nccwpck_require__(5141);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const version = core.getInput('version');
-            const flags = core.getInput('flags');
-            core.debug(`Received version ${version}.`); // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
-            core.debug(`Received flags ${flags}.`); // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
-            const artifact = new artifact_1.Artifact(new version_1.Version(version), new env_1.Env());
-            const path = yield artifact.getPath();
-            core.debug(`Downloaded ${path}`);
+            const context = new context_1.Context();
+            const artifact = new artifact_1.Artifact(context);
+            const gremlins = new gremlins_1.Gremlins(context, artifact);
+            yield gremlins.run();
         }
         catch (error) {
             if (error instanceof Error)

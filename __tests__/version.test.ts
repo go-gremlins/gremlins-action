@@ -19,6 +19,9 @@ import { anyString, instance, mock, reset, when } from 'ts-mockito'
 
 import { Version } from '../src/version'
 
+const FULL_RELEASE_RESPONSE = require('./fixtures/full_releases.json')
+const SINGLE_RELEASE_RESPONSE = require('./fixtures/single_release.json')
+
 describe('version', () => {
   let httpClientMock = mock(httpm.HttpClient)
 
@@ -27,10 +30,9 @@ describe('version', () => {
   })
 
   it('returns latest release', async () => {
-    const ghResponse = require('./fixtures/full_releases.json')
     const mockedResponse = {
       statusCode: 200,
-      result: ghResponse,
+      result: FULL_RELEASE_RESPONSE,
       headers: {
         'content-type': 'application/json',
       },
@@ -49,10 +51,9 @@ describe('version', () => {
   })
 
   it('returns specific release', async () => {
-    const ghResponse = require('./fixtures/single_release.json')
     const mockedResponse = {
       statusCode: 200,
-      result: ghResponse,
+      result: SINGLE_RELEASE_RESPONSE,
       headers: {
         'content-type': 'application/json',
       },
@@ -71,10 +72,9 @@ describe('version', () => {
   })
 
   it('returns max satisfying release, when range is specified', async () => {
-    const ghResponse = require('./fixtures/full_releases.json')
     const mockedResponse = {
       statusCode: 200,
-      result: ghResponse,
+      result: FULL_RELEASE_RESPONSE,
       headers: {
         'content-type': 'application/json',
       },
@@ -93,10 +93,9 @@ describe('version', () => {
   })
 
   it('returns the raw release', async () => {
-    const ghResponse = require('./fixtures/single_release.json')
     const mockedResponse = {
       statusCode: 200,
-      result: ghResponse,
+      result: SINGLE_RELEASE_RESPONSE,
       headers: {
         'content-type': 'application/json',
       },
@@ -115,10 +114,9 @@ describe('version', () => {
   })
 
   it('throws when range cannot be satisfied', async () => {
-    const ghResponse = require('./fixtures/full_releases.json')
     const mockedResponse = {
       statusCode: 200,
-      result: ghResponse,
+      result: FULL_RELEASE_RESPONSE,
       headers: {
         'content-type': 'application/json',
       },
