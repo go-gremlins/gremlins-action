@@ -23,41 +23,59 @@ jest.mock('@actions/core')
 const mockGetInput = getInput as jest.MockedFunction<typeof getInput>
 
 describe('platform', () => {
-  it('returns windows if platform is win32', () => {
-    const env = new Context('', 'win32')
+  const testCases: Array<{
+    name: string
+    platform: string
+    wantPlatform: string
+    arch: string
+    wantArch: string
+  }> = [
+    {
+      name: 'returns amd64/windows if win32/x64',
+      platform: 'win32',
+      wantPlatform: 'windows',
+      arch: 'x64',
+      wantArch: 'amd64',
+    },
+    {
+      name: 'returns amd64/linux if linux/x64',
+      platform: 'linux',
+      wantPlatform: 'linux',
+      arch: 'x64',
+      wantArch: 'amd64',
+    },
 
-    expect(env.platform()).toEqual('windows')
-  })
+    {
+      name: 'returns 386/linux if linux/x32',
+      platform: 'linux',
+      wantPlatform: 'linux',
+      arch: 'x32',
+      wantArch: '386',
+    },
 
-  it('returns darwin if platform is darwin', () => {
-    const env = new Context('', 'darwin')
+    {
+      name: 'returns 386/linux if linux/ia322',
+      platform: 'linux',
+      wantPlatform: 'linux',
+      arch: 'ia32',
+      wantArch: '386',
+    },
+    {
+      name: 'returns arm64/darwin if darwin/arm',
+      platform: 'darwin',
+      wantPlatform: 'darwin',
+      arch: 'arm',
+      wantArch: 'arm',
+    },
+  ]
+  for (const tc of testCases) {
+    it(tc.name, () => {
+      const env = new Context(tc.arch, tc.platform)
 
-    expect(env.platform()).toEqual('darwin')
-  })
-
-  it('returns 386 if arch is x32', () => {
-    const env = new Context('x32', '')
-
-    expect(env.arch()).toEqual('386')
-  })
-
-  it('returns 386 if arch is ia32', () => {
-    const env = new Context('ia32', '')
-
-    expect(env.arch()).toEqual('386')
-  })
-
-  it('returns amd64 if arch is x64', () => {
-    const env = new Context('x64', '')
-
-    expect(env.arch()).toEqual('amd64')
-  })
-
-  it('returns arm if arch is arm', () => {
-    const env = new Context('arm', '')
-
-    expect(env.arch()).toEqual('arm')
-  })
+      expect(env.platform()).toEqual(tc.wantPlatform)
+      expect(env.arch()).toEqual(tc.wantArch)
+    })
+  }
 
   it('returns the correct inputs', () => {
     mockGetInput.mockReturnValue('test')
