@@ -39,16 +39,16 @@ export class Version {
       this.httpClient = client
     }
     this.version = this.getRelease(wantVer)
-    core.info(`Found release: ${this.version}`)
   }
 
   // Returns the found version in the format 'vX.Y.Z'.
   async get(): Promise<string> {
+    core.info(`Found release: ${await this.version}`)
     return this.version
   }
 
   async getRaw(): Promise<string> {
-    const v = semver.clean(await this.version)
+    const v = semver.clean(await this.get())
     if (!v) {
       throw Error('Panic: this should never happen.')
     }

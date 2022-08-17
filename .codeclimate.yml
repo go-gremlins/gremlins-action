@@ -1,0 +1,5 @@
+plugins:
+  tslint:
+    enabled: false
+  eslint:
+    enabled: true

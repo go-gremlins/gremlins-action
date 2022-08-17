@@ -270,7 +270,7 @@ class Gremlins {
         return __awaiter(this, void 0, void 0, function* () {
             const bin = yield this.artifact.getExePath();
             const inputs = this.ctx.getInputs();
-            const execOptions = {};
+            const execOptions = { cwd: '.' };
             const args = ['unleash'];
             if (inputs != null && inputs.args && inputs.args !== '') {
                 const a = inputs.args.split(' ');
@@ -442,17 +442,17 @@ class Version {
             this.httpClient = client;
         }
         this.version = this.getRelease(wantVer);
-        core.info(`Found release: ${this.version}`);
     }
     // Returns the found version in the format 'vX.Y.Z'.
     get() {
         return __awaiter(this, void 0, void 0, function* () {
+            core.info(`Found release: ${yield this.version}`);
             return this.version;
         });
     }
     getRaw() {
         return __awaiter(this, void 0, void 0, function* () {
-            const v = semver.clean(yield this.version);
+            const v = semver.clean(yield this.get());
             if (!v) {
                 throw Error('Panic: this should never happen.');
             }

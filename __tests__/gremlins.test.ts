@@ -40,7 +40,7 @@ describe('gremlins', () => {
 
     await gremlins.run()
 
-    expect(exec).toHaveBeenCalledWith('path/to/go', ['unleash'], {})
+    expect(exec).toHaveBeenCalledWith('path/to/go', ['unleash'], { cwd: '.' })
   })
 
   it('runs gremlins unleash with args', async () => {
@@ -57,7 +57,7 @@ describe('gremlins', () => {
     expect(exec).toHaveBeenCalledWith(
       'path/to/go',
       ['unleash', '--tags="tag1,tag2"', '--silent'],
-      {}
+      { cwd: '.' }
     )
   })
 
