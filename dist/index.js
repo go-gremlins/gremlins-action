@@ -270,7 +270,7 @@ class Gremlins {
         return __awaiter(this, void 0, void 0, function* () {
             const bin = yield this.artifact.getExePath();
             const inputs = this.ctx.getInputs();
-            const execOptions = {};
+            const execOptions = { cwd: '.' };
             const args = ['unleash'];
             if (inputs != null && inputs.args && inputs.args !== '') {
                 const a = inputs.args.split(' ');

@@ -26,7 +26,7 @@ export class Gremlins {
     const bin = await this.artifact.getExePath()
     const inputs = this.ctx.getInputs()
 
-    const execOptions: ExecOptions = {}
+    const execOptions: ExecOptions = { cwd: '.' }
     const args: string[] = ['unleash']
     if (inputs != null && inputs.args && inputs.args !== '') {
       const a = inputs.args.split(' ')
