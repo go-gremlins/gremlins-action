@@ -43,7 +43,8 @@ export class Version {
 
   // Returns the found version in the format 'vX.Y.Z'.
   async get(): Promise<string> {
-    core.info(`Found release: ${await this.version}`)
+    core.info(`Found ${await this.version} release`)
+
     return this.version
   }
 
