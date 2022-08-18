@@ -1,10 +1,13 @@
 # Gremlins Action
 
-The official [GitHub Action](https://github.com/features/actions) for Gremlins.
+The official [GitHub Action](https://github.com/features/actions)
+for [Gremlins](https://github.com/go-gremlins/gremlins).
 
-[![codecov](https://codecov.io/gh/go-gremlins/gremlins-action/branch/main/graph/badge.svg?token=MTDsNc2Lak)](https://codecov.io/gh/go-gremlins/gremlins-action)
-[![Maintainability](https://api.codeclimate.com/v1/badges/e95c66bb9a0fa4d3f8d3/maintainability)](https://codeclimate.com/github/go-gremlins/gremlins-action/maintainability)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1da2ebb82033477298c56cf11ce3f716)](https://www.codacy.com/gh/go-gremlins/gremlins-action/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=go-gremlins/gremlins-action&amp;utm_campaign=Badge_Grade)
+[![GitHub release (latest by semver)](https://img.shields.io/github/v/release/go-gremlins/gremlins-action?logo=github)](https://github.com/go-gremlins/gremlins-action/releases/latest)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/go-gremlins/gremlins-action/build-test?logo=github)](https://github.com/go-gremlins/gremlins-action/actions/workflows/test.yml)
+[![Codecov](https://img.shields.io/codecov/c/github/go-gremlins/gremlins-action?logo=codecov)](https://codecov.io/gh/go-gremlins/gremlins-action)
+[![Codacy grade](https://img.shields.io/codacy/grade/1da2ebb82033477298c56cf11ce3f716?logo=codacy)](https://www.codacy.com/gh/go-gremlins/gremlins-action/dashboard?utm_source=github.com&utm_medium=referral&utm_content=go-gremlins/gremlins-action&utm_campaign=Badge_Grade)
+[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/go-gremlins/gremlins-action?logo=codeclimate)](https://codeclimate.com/github/go-gremlins/gremlins-action/maintainability)
 
 ## Example usage
 

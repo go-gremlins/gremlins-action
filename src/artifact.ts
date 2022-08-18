@@ -41,7 +41,9 @@ export class Artifact {
     const url = this.generateUrl(release, arch, platform)
     const cached = find(TOOL_NAME, release, arch)
     if (cached && cached !== '') {
+      core.info(`Found in cache @ ${cached}`)
       core.addPath(cached)
+      core.info('Added gremlins to the path')
 
       return path.join(cached, this.getToolName(platform))
     }
@@ -52,8 +54,13 @@ export class Artifact {
       release,
       arch
     )
+    core.info('Added gremlins to the cache')
+
     const exePath = path.join(cachedPath, this.getToolName(platform))
     core.addPath(cachedPath)
+    core.info('Added gremlins to the path')
+
+    core.info(`Successfully setup Gremlins version ${release}`)
 
     return exePath
   }
@@ -65,9 +72,8 @@ export class Artifact {
   }
 
   private async extractToFolder(url: string): Promise<string> {
-    core.info(`Downloading ${url}`)
     const gremlinsPath = await downloadTool(url)
-    core.info('Extracting Gremlins')
+    core.info(`Downloaded from ${url}`)
     const gremlinsExtractedFolder = await extractTar(gremlinsPath)
     core.debug(`Extracted to ${gremlinsExtractedFolder}`)
 
