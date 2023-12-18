@@ -20,9 +20,11 @@ on:
 
 jobs:
   gremlins:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-go@v3
-    - uses: actions/gremlins-action@v1
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+    - uses: go-gremlins/gremlins-action@v1
       with:
         version: latest
         args: --tags="tag1,tag2"
